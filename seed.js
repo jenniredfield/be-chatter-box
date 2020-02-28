@@ -4,6 +4,7 @@ const faker = require("faker")
 const DB = process.env.DB_URL;
 
 const Message = require('./models/Message');
+const ChatRoom = require('./models/ChatRoom');
 
 mongoose.connect(DB, {
     useNewUrlParser: true,
@@ -12,7 +13,7 @@ mongoose.connect(DB, {
     if(err) console.log(err);
     console.log('connected to DB....');
     mongoose.connection.dropDatabase(() => {
-        console.log('Database droped!');
+        console.log('Database dropped!');
 
         const promises = [];
 
@@ -27,8 +28,15 @@ mongoose.connect(DB, {
         Promise.all(promises)
             .then((docs) => {
                 console.log('Documents saved!');
-                console.log(docs);
-                mongoose.connection.close();
+
+                ChatRoom.create({
+                    name: "StarWars",
+                    messages: docs
+                })
+                .then((doc) => {
+                    console.log(doc)
+                    mongoose.connection.close();
+                });
             });
     });
 });

@@ -1,6 +1,41 @@
-const faker = require('faker');
+require('dotenv').config();
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
+const PORT = 3000;
+const DB = process.env.DB_URL;
 
-console.log('name', faker.name.firstName());
-console.log('name', faker.name.findName());
-console.log('name', faker.fake("{{name.lastName}}, {{name.firstName}} {{address.streetName}}"));
-console.log('name', faker.lorem.paragraphs());
+const ChatRoom = require('./models/ChatRoom');
+
+mongoose.connect(DB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}, (err) => {
+    if(err) console.log(err);
+    console.log('database connected!')
+})
+
+
+app.get('/general', (req, res) => {
+    console.log('get')
+    ChatRoom.findOne({name: 'General'})
+        .then((docs) => {
+            res.send(docs)
+        }).catch(() => {
+            res.send(400);
+        })
+});
+
+app.get('/starwars', (req, res) => {
+    console.log('get')
+    ChatRoom.findOne({name: 'StarWars'})
+        .then((docs) => {
+            res.send(docs)
+        }).catch(() => {
+            res.send(400);
+        })
+});
+
+app.listen(PORT, () => {
+    console.log(`Server listening on Port ${PORT}`);
+});
