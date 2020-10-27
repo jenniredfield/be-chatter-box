@@ -4,7 +4,7 @@ const faker = require("faker")
 const DB = process.env.DB_URL;
 
 const Message = require('./models/Message');
-const ChatRoom = require('./models/ChatRoom');
+const Channel = require('./models/Channel');
 
 mongoose.connect(DB, {
     useNewUrlParser: true,
@@ -29,9 +29,10 @@ mongoose.connect(DB, {
             .then((docs) => {
                 console.log('Documents saved!');
 
-                ChatRoom.create({
+                Channel.create({
                     name: "StarWars",
-                    messages: docs
+                    messages: docs,
+                    users: ['user1']
                 })
                 .then((doc) => {
                     console.log(doc)
