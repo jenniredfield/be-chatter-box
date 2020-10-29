@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const PORT = 3000;
 const DB = process.env.DB_URL;
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const Channel = require('./models/Channel');
 const Message = require('./models/Message');
@@ -19,9 +20,10 @@ mongoose.connect(DB, {
 });
 
 app.use(bodyParser.json());
+app.use(cors());
 
 app.get('/channel/*', (req, res) => {
-  const channelId = req.path.split('/')[1];
+  const channelId = req.path.split('/')[2];
 
   Channel.find({_id: channelId})
     .then((channel) => {
@@ -57,6 +59,22 @@ io.on('connection', (socket) => {
   });
 });
 
+app.post('/createChannel', (req, res) =>{
+    const body = req.body;
+    const name = body.name;
+
+    Channel.create({
+        channelName: name,
+        messages: [],
+        users: []
+    }).then(channel => {
+        channel.save()
+        .then(() =>{
+            res.send('Channel created!')
+        })
+    });
+});
+
 
 http.listen(PORT, () => {
   console.log('listening on *:3000');
@@ -64,50 +82,6 @@ http.listen(PORT, () => {
 
 
 
-
-
-
-
-
-
-
-
-
-// app.get('/channel/*', (req, res) => {
-//     const channelId = req.path.split('/')[2];
-
-//     Channel.find({_id: channelId})
-//         .then(channel => {
-//             res.send(channel);
-//         });
-// })
-
-// app.get('/messages/*', (req, res) => {
-//     const channelId = req.path.split('/')[2];
-
-//     Channel.find({_id: channelId})
-//     .then(channel =>{
-//     console.log("channel", channel)
-//         res.send({messages: channel[0].messages});
-//     })
-// })
-
-// app.post('/createChannel', (req, res) =>{
-//     const body = req.body;
-//     const name = body.name;
-
-//     Channel.create({
-//         channelName: name,
-//         messages: [],
-//         users: []
-//     }).then(channel => {
-//         channel.save()
-//         .then(() =>{
-//             res.send('Channel created!')
-//         })
-//     });
-
-// });
 
 // app.post('/message/*', (req, res) =>{
 //     const channelId = req.path.split('/')[2];
@@ -125,12 +99,4 @@ http.listen(PORT, () => {
 //             res.send(savedChannel);
 //         });
 //     })
-// });
-
-// app.get('*', (req, res) => {
-//     res.send('<div>Handler</div>');
-// })
-
-// app.listen(PORT, () => {
-//     console.log(`Server listening on Port ${PORT}`);
 // });
