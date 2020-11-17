@@ -34,7 +34,13 @@ app.get('/channel/*', (req, res) => {
 app.get('/allChannels', (req, res) => {
   Channel.find()
   .then(channels => {
-    res.send(channels);
+    const newChannels = channels.map(c => {
+      return {
+        channelName: c.channelName,
+        channelId: c._id
+      }
+    })
+    res.send(newChannels);
   })
 })
 
