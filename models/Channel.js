@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 const ChannelSchema = new Schema({
     channelName: String,
     messages: Array,
-    users: Array,
-    id: String
+    users: Array
 });
 
 const ChannelModel = mongoose.model('Channel', ChannelSchema);
